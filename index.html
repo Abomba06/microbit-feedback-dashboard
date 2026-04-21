@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>micro:bit Feedback Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="dashboard-shell">
+    <header class="hero-card">
+      <div>
+        <p class="eyebrow">Live Device Monitor</p>
+        <h1>micro:bit Feedback Dashboard</h1>
+        <p class="hero-copy">
+          Track LED output, button presses, and device temperature from a BBC micro:bit
+          using a clean real-time control panel.
+        </p>
+      </div>
+      <div class="connection-pill" id="connection-pill">Preview Mode</div>
+    </header>
+
+    <main class="dashboard-grid">
+      <section class="panel panel-display" aria-labelledby="led-panel-title">
+        <div class="panel-heading">
+          <p class="panel-kicker">Display</p>
+          <h2 id="led-panel-title">5x5 LED Matrix</h2>
+        </div>
+        <div class="microbit-frame">
+          <div class="microbit-header">
+            <span class="microbit-dot"></span>
+            <span class="microbit-label">micro:bit display</span>
+            <span class="microbit-dot"></span>
+          </div>
+          <div class="led-grid" id="led-grid" aria-label="micro:bit LED display"></div>
+        </div>
+      </section>
+
+      <section class="panel panel-temp" aria-labelledby="temperature-title">
+        <div class="panel-heading">
+          <p class="panel-kicker">Environment</p>
+          <h2 id="temperature-title">Temperature Gauge</h2>
+        </div>
+        <div class="temperature-layout">
+          <div class="thermometer" aria-hidden="true">
+            <div class="thermometer-track">
+              <div class="thermometer-fill" id="thermometer-fill"></div>
+            </div>
+            <div class="thermometer-bulb"></div>
+          </div>
+          <div class="temperature-readout">
+            <p class="readout-label">Current Reading</p>
+            <p class="temperature-value"><span id="temperature-value">24</span><span class="unit">°C</span></p>
+            <p class="temperature-range">Expected micro:bit room range: 0°C to 40°C</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-buttons" aria-labelledby="buttons-title">
+        <div class="panel-heading">
+          <p class="panel-kicker">Inputs</p>
+          <h2 id="buttons-title">Button Status</h2>
+        </div>
+        <div class="button-status-grid">
+          <article class="button-card" id="button-a-card">
+            <div>
+              <p class="button-label">Button A</p>
+              <p class="button-state" id="button-a-state">Not Pressed</p>
+            </div>
+            <div class="button-indicator" id="button-a-indicator">A</div>
+          </article>
+          <article class="button-card" id="button-b-card">
+            <div>
+              <p class="button-label">Button B</p>
+              <p class="button-state" id="button-b-state">Not Pressed</p>
+            </div>
+            <div class="button-indicator" id="button-b-indicator">B</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel panel-stream" aria-labelledby="stream-title">
+        <div class="panel-heading">
+          <p class="panel-kicker">Data Feed</p>
+          <h2 id="stream-title">Stream Snapshot</h2>
+        </div>
+        <dl class="stream-metadata">
+          <div>
+            <dt>Source</dt>
+            <dd id="source-name">Mock Data</dd>
+          </div>
+          <div>
+            <dt>Last Update</dt>
+            <dd id="last-update">Waiting for stream</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd id="stream-status">Ready for Data Streamer input</dd>
+          </div>
+        </dl>
+        <p class="stream-note">
+          The JavaScript includes a small adapter so live values from Microsoft MakeCode
+          Data Streamer can replace the preview feed without restructuring the UI.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

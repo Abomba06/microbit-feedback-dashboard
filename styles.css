@@ -1,0 +1,361 @@
+:root {
+  --bg-top: #f4efe7;
+  --bg-bottom: #dce8eb;
+  --panel: rgba(255, 255, 255, 0.8);
+  --panel-border: rgba(25, 48, 71, 0.08);
+  --text-main: #132033;
+  --text-muted: #587085;
+  --accent: #ff7a18;
+  --accent-soft: rgba(255, 122, 24, 0.18);
+  --success: #18a957;
+  --danger: #d94841;
+  --shadow-lg: 0 24px 60px rgba(19, 32, 51, 0.16);
+  --shadow-md: 0 14px 36px rgba(19, 32, 51, 0.12);
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at top left, rgba(255, 122, 24, 0.18), transparent 32%),
+    radial-gradient(circle at top right, rgba(17, 153, 142, 0.14), transparent 24%),
+    linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(19, 32, 51, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(19, 32, 51, 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent 92%);
+}
+
+.dashboard-shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 36px 0 56px;
+}
+
+.hero-card,
+.panel {
+  backdrop-filter: blur(18px);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 28px 30px;
+  border-radius: var(--radius-xl);
+}
+
+.eyebrow,
+.panel-kicker,
+.readout-label,
+.button-label,
+.stream-metadata dt,
+.temperature-range {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.panel-kicker {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  line-height: 0.98;
+}
+
+.hero-copy {
+  max-width: 62ch;
+  margin-top: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.connection-pill {
+  flex-shrink: 0;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: rgba(19, 32, 51, 0.06);
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.85fr;
+  gap: 24px;
+}
+
+.panel {
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.panel-heading {
+  margin-bottom: 22px;
+}
+
+.panel-heading h2 {
+  font-size: 1.45rem;
+}
+
+.panel-display {
+  min-height: 420px;
+}
+
+.microbit-frame {
+  display: grid;
+  gap: 20px;
+  justify-items: center;
+  padding: 28px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.18), transparent 36%),
+    linear-gradient(180deg, #192739, #101c2b);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.microbit-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 0.9rem;
+}
+
+.microbit-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.led-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  width: min(320px, 100%);
+  aspect-ratio: 1;
+}
+
+.led-cell {
+  border-radius: 16px;
+  background: radial-gradient(circle, rgba(100, 122, 145, 0.28), rgba(24, 33, 45, 0.92));
+  box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.05);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 220ms ease;
+}
+
+.panel-temp,
+.panel-buttons,
+.panel-stream {
+  min-height: 250px;
+}
+
+.temperature-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: 28px;
+  min-height: 300px;
+}
+
+.thermometer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  gap: 10px;
+}
+
+.thermometer-track {
+  position: relative;
+  width: 42px;
+  height: 240px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(19, 32, 51, 0.08), rgba(19, 32, 51, 0.14));
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(19, 32, 51, 0.08);
+}
+
+.thermometer-fill {
+  position: absolute;
+  inset: auto 0 0;
+  height: 35%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffd166, #ff7a18 65%, #ef476f);
+  transition: height 300ms ease;
+}
+
+.thermometer-bulb {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ffd7a3, #ff7a18 54%, #ef476f 100%);
+  box-shadow: var(--shadow-md);
+}
+
+.temperature-value {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.unit {
+  font-size: 1.7rem;
+  padding-top: 10px;
+}
+
+.temperature-range {
+  margin-top: 16px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.button-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.button-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: rgba(19, 32, 51, 0.04);
+  border: 1px solid rgba(19, 32, 51, 0.06);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.button-state {
+  margin-top: 8px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.button-indicator {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  background: rgba(19, 32, 51, 0.08);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.stream-metadata {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 0;
+}
+
+.stream-metadata div {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: rgba(19, 32, 51, 0.04);
+}
+
+.stream-metadata dt {
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.stream-metadata dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.stream-note {
+  margin-top: 18px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .button-status-grid,
+  .stream-metadata {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .connection-pill {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-shell {
+    width: min(100% - 20px, 1120px);
+    padding-top: 20px;
+  }
+
+  .hero-card,
+  .panel {
+    padding: 20px;
+  }
+
+  .microbit-frame {
+    padding: 20px;
+  }
+
+  .led-grid {
+    gap: 10px;
+  }
+
+  .temperature-layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    min-height: unset;
+  }
+
+  .temperature-readout {
+    text-align: center;
+  }
+}
