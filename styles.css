@@ -176,6 +176,14 @@ h1 {
   transition: transform 180ms ease, box-shadow 180ms ease, background 220ms ease;
 }
 
+.led-cell.is-on {
+  transform: translateY(-1px) scale(1.03);
+  background: radial-gradient(circle, #ffe08a, #ff9a3d 58%, #ef476f 100%);
+  box-shadow:
+    0 0 20px rgba(255, 154, 61, 0.35),
+    inset 0 0 18px rgba(255, 255, 255, 0.34);
+}
+
 .panel-temp,
 .panel-buttons,
 .panel-stream {
@@ -263,6 +271,12 @@ h1 {
   transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
+.button-card.is-pressed {
+  transform: translateY(-2px);
+  background: rgba(24, 169, 87, 0.12);
+  box-shadow: 0 16px 32px rgba(24, 169, 87, 0.16);
+}
+
 .button-state {
   margin-top: 8px;
   font-size: 1.4rem;
@@ -278,6 +292,11 @@ h1 {
   background: rgba(19, 32, 51, 0.08);
   font-size: 1.4rem;
   font-weight: 700;
+}
+
+.button-card.is-pressed .button-indicator {
+  background: linear-gradient(135deg, rgba(24, 169, 87, 0.92), rgba(14, 122, 62, 0.94));
+  color: #fff;
 }
 
 .stream-metadata {
