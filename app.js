@@ -68,6 +68,7 @@ const initialState = {
 
 let currentState = initialState;
 let frameIndex = 0;
+let previewIntervalId = null;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -85,6 +86,29 @@ function normalizeLedMatrix(ledMatrix) {
   }
 
   return expanded;
+}
+
+function extractLedMatrixFromObject(payload) {
+  const ledKeys = Array.from({ length: 25 }, (_, index) => `led${index + 1}`);
+
+  if (ledKeys.every((key) => key in payload)) {
+    return ledKeys.map((key) => payload[key]);
+  }
+
+  return payload.ledMatrix;
+}
+
+function normalizeIncomingPayload(payload) {
+  const ledMatrix = extractLedMatrixFromObject(payload);
+
+  return {
+    ledMatrix,
+    buttonA: Boolean(Number(payload.buttonA ?? payload.a ?? 0)),
+    buttonB: Boolean(Number(payload.buttonB ?? payload.b ?? 0)),
+    temperature: Number(payload.temperature ?? payload.temp ?? 0),
+    source: "Microsoft MakeCode Data Streamer",
+    connected: true,
+  };
 }
 
 function setButtonState(card, labelNode, isPressed) {
@@ -147,16 +171,14 @@ function nextMockFrame() {
 //   temperature: 24
 // }
 window.updateMicrobitDashboard = function updateMicrobitDashboard(payload) {
-  renderDashboard({
-    ledMatrix: payload.ledMatrix,
-    buttonA: Boolean(Number(payload.buttonA)),
-    buttonB: Boolean(Number(payload.buttonB)),
-    temperature: Number(payload.temperature),
-    source: "Microsoft MakeCode Data Streamer",
-    connected: true,
-  });
+  if (previewIntervalId !== null) {
+    window.clearInterval(previewIntervalId);
+    previewIntervalId = null;
+  }
+
+  renderDashboard(normalizeIncomingPayload(payload));
 };
 
 renderDashboard(initialState);
 nextMockFrame();
-window.setInterval(nextMockFrame, 2400);
+previewIntervalId = window.setInterval(nextMockFrame, 2400);
