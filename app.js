@@ -10,6 +10,10 @@ const buttonAState = document.getElementById("button-a-state");
 const buttonBState = document.getElementById("button-b-state");
 const buttonACard = document.getElementById("button-a-card");
 const buttonBCard = document.getElementById("button-b-card");
+const payloadPreview = document.getElementById("payload-preview");
+const startPreviewButton = document.getElementById("start-preview-button");
+const stopPreviewButton = document.getElementById("stop-preview-button");
+const sampleLiveButton = document.getElementById("sample-live-button");
 
 for (let index = 0; index < 25; index += 1) {
   const cell = document.createElement("div");
@@ -148,6 +152,17 @@ function renderDashboard(state) {
     ? "Receiving live micro:bit values"
     : "Showing preview values until a live stream arrives";
   connectionPill.textContent = currentState.connected ? "Live Stream Active" : "Preview Mode";
+  payloadPreview.textContent = JSON.stringify(
+    {
+      ledMatrix: currentState.ledMatrix,
+      buttonA: currentState.buttonA,
+      buttonB: currentState.buttonB,
+      temperature: currentState.temperature,
+      source: currentState.source,
+    },
+    null,
+    2,
+  );
 }
 
 function nextMockFrame() {
@@ -158,6 +173,24 @@ function nextMockFrame() {
     source: "Mock Data",
     connected: false,
   });
+}
+
+function startPreviewLoop() {
+  if (previewIntervalId !== null) {
+    return;
+  }
+
+  nextMockFrame();
+  previewIntervalId = window.setInterval(nextMockFrame, 2400);
+}
+
+function stopPreviewLoop() {
+  if (previewIntervalId === null) {
+    return;
+  }
+
+  window.clearInterval(previewIntervalId);
+  previewIntervalId = null;
 }
 
 // Data Streamer integration point:
@@ -171,14 +204,27 @@ function nextMockFrame() {
 //   temperature: 24
 // }
 window.updateMicrobitDashboard = function updateMicrobitDashboard(payload) {
-  if (previewIntervalId !== null) {
-    window.clearInterval(previewIntervalId);
-    previewIntervalId = null;
-  }
-
+  stopPreviewLoop();
   renderDashboard(normalizeIncomingPayload(payload));
 };
 
 renderDashboard(initialState);
 nextMockFrame();
 previewIntervalId = window.setInterval(nextMockFrame, 2400);
+
+startPreviewButton.addEventListener("click", startPreviewLoop);
+stopPreviewButton.addEventListener("click", stopPreviewLoop);
+sampleLiveButton.addEventListener("click", () => {
+  window.updateMicrobitDashboard({
+    ledMatrix: [
+      1, 0, 0, 0, 1,
+      0, 1, 0, 1, 0,
+      0, 0, 1, 0, 0,
+      0, 1, 0, 1, 0,
+      1, 0, 0, 0, 1,
+    ],
+    buttonA: 1,
+    buttonB: 1,
+    temperature: 29,
+  });
+});

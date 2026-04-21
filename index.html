@@ -106,6 +106,26 @@
           Data Streamer can replace the preview feed without restructuring the UI.
         </p>
       </section>
+
+      <section class="panel panel-controls" aria-labelledby="controls-title">
+        <div class="panel-heading">
+          <p class="panel-kicker">Simulator</p>
+          <h2 id="controls-title">Local Testing Controls</h2>
+        </div>
+        <div class="control-actions">
+          <button class="control-button" id="start-preview-button" type="button">Start Preview Loop</button>
+          <button class="control-button" id="stop-preview-button" type="button">Pause Preview Loop</button>
+          <button class="control-button control-button-accent" id="sample-live-button" type="button">Send Sample Live Frame</button>
+        </div>
+        <p class="stream-note">
+          Use these while developing locally. Once Data Streamer is connected, the same dashboard
+          updates through the shared payload adapter.
+        </p>
+        <div class="payload-card">
+          <p class="payload-label">Last Payload</p>
+          <pre class="payload-preview" id="payload-preview">Waiting for data...</pre>
+        </div>
+      </section>
     </main>
   </div>
 
