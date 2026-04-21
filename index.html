@@ -107,6 +107,50 @@
         </p>
       </section>
 
+      <section class="panel panel-serial" aria-labelledby="serial-title">
+        <div class="panel-heading">
+          <p class="panel-kicker">Serial Bridge</p>
+          <h2 id="serial-title">micro:bit Data Streamer Connection</h2>
+        </div>
+        <div class="serial-toolbar">
+          <button class="control-button control-button-accent" id="connect-serial-button" type="button">Connect micro:bit</button>
+          <button class="control-button" id="disconnect-serial-button" type="button">Disconnect</button>
+        </div>
+        <div class="bridge-grid">
+          <div class="bridge-card">
+            <p class="payload-label">Expected CSV Format</p>
+            <p class="bridge-copy">
+              `led1, led2, ... led25, buttonA, buttonB, temperature`
+            </p>
+            <p class="bridge-copy">
+              The browser opens the micro:bit serial port at <strong>9600 baud</strong> and
+              reads one newline-terminated packet at a time.
+            </p>
+          </div>
+          <div class="bridge-card">
+            <p class="payload-label">Connection Details</p>
+            <dl class="serial-status-list">
+              <div>
+                <dt>Mode</dt>
+                <dd id="serial-mode">Web Serial</dd>
+              </div>
+              <div>
+                <dt>Bridge State</dt>
+                <dd id="serial-state">Idle</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        <div class="payload-card">
+          <p class="payload-label">Latest Raw Serial Line</p>
+          <pre class="payload-preview" id="serial-preview">No serial data received yet.</pre>
+        </div>
+        <p class="stream-note">
+          This works on `localhost` in Chromium-based browsers that support the Web Serial API.
+          If your micro:bit stream uses the recommended column order above, the dashboard updates automatically.
+        </p>
+      </section>
+
       <section class="panel panel-controls" aria-labelledby="controls-title">
         <div class="panel-heading">
           <p class="panel-kicker">Simulator</p>

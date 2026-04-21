@@ -187,6 +187,7 @@ h1 {
 .panel-temp,
 .panel-buttons,
 .panel-stream,
+.panel-serial,
 .panel-controls {
   min-height: 250px;
 }
@@ -334,10 +335,63 @@ h1 {
   grid-column: 1 / -1;
 }
 
+.panel-serial {
+  grid-column: 1 / -1;
+}
+
 .control-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
+}
+
+.serial-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.bridge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.bridge-card {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: rgba(19, 32, 51, 0.04);
+}
+
+.bridge-copy {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.bridge-copy + .bridge-copy {
+  margin-top: 10px;
+}
+
+.serial-status-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.serial-status-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.serial-status-list dt {
+  color: var(--text-muted);
+}
+
+.serial-status-list dd {
+  margin: 0;
+  font-weight: 700;
 }
 
 .control-button {
@@ -394,7 +448,8 @@ h1 {
   }
 
   .button-status-grid,
-  .stream-metadata {
+  .stream-metadata,
+  .bridge-grid {
     grid-template-columns: 1fr;
   }
 

@@ -37,3 +37,25 @@ window.updateMicrobitDashboard({
 ```
 
 `app.js` also includes normalization helpers so you can adapt keyed Data Streamer values without changing the UI layout.
+
+## Direct micro:bit serial bridge
+
+The dashboard can also connect straight to the micro:bit from `localhost` using the browser's Web Serial API.
+
+- Use a Chromium-based browser such as Microsoft Edge or Google Chrome
+- Open the dashboard on `http://localhost:3000`
+- Click `Connect micro:bit`
+- Choose the micro:bit serial device
+
+Recommended serial packet format from MakeCode Data Streamer:
+
+```text
+led1,led2,led3,...,led25,buttonA,buttonB,temperature
+```
+
+Notes:
+
+- Baud rate: `9600`
+- Each packet should end with a newline
+- The bridge reads one CSV line at a time and maps the first 25 values to the LED matrix
+- It also accepts a compact fallback format of `25-character-led-string,buttonA,buttonB,temperature`

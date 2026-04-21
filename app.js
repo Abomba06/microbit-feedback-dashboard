@@ -14,6 +14,11 @@ const payloadPreview = document.getElementById("payload-preview");
 const startPreviewButton = document.getElementById("start-preview-button");
 const stopPreviewButton = document.getElementById("stop-preview-button");
 const sampleLiveButton = document.getElementById("sample-live-button");
+const connectSerialButton = document.getElementById("connect-serial-button");
+const disconnectSerialButton = document.getElementById("disconnect-serial-button");
+const serialPreview = document.getElementById("serial-preview");
+const serialState = document.getElementById("serial-state");
+const serialMode = document.getElementById("serial-mode");
 
 for (let index = 0; index < 25; index += 1) {
   const cell = document.createElement("div");
@@ -73,6 +78,9 @@ const initialState = {
 let currentState = initialState;
 let frameIndex = 0;
 let previewIntervalId = null;
+let serialPort = null;
+let serialReader = null;
+let serialReadLoopPromise = null;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -113,6 +121,37 @@ function normalizeIncomingPayload(payload) {
     source: "Microsoft MakeCode Data Streamer",
     connected: true,
   };
+}
+
+function parseCsvLine(line) {
+  return line
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter((entry, index, entries) => !(index === entries.length - 1 && entry === ""));
+}
+
+function normalizeCsvPayload(line) {
+  const values = parseCsvLine(line);
+
+  if (values.length >= 28) {
+    return normalizeIncomingPayload({
+      ledMatrix: values.slice(0, 25),
+      buttonA: values[25],
+      buttonB: values[26],
+      temperature: values[27],
+    });
+  }
+
+  if (values.length === 4 && values[0].length >= 25) {
+    return normalizeIncomingPayload({
+      ledMatrix: values[0].slice(0, 25).split(""),
+      buttonA: values[1],
+      buttonB: values[2],
+      temperature: values[3],
+    });
+  }
+
+  return null;
 }
 
 function setButtonState(card, labelNode, isPressed) {
@@ -193,6 +232,98 @@ function stopPreviewLoop() {
   previewIntervalId = null;
 }
 
+function updateSerialState(message) {
+  serialState.textContent = message;
+}
+
+async function disconnectSerial() {
+  if (serialReader) {
+    await serialReader.cancel();
+    serialReader.releaseLock();
+    serialReader = null;
+  }
+
+  if (serialPort) {
+    await serialPort.close();
+    serialPort = null;
+  }
+
+  if (serialReadLoopPromise) {
+    try {
+      await serialReadLoopPromise;
+    } catch (_error) {
+      // The read loop rejects on cancellation, which is expected during disconnect.
+    }
+    serialReadLoopPromise = null;
+  }
+
+  updateSerialState("Idle");
+}
+
+async function readSerialLoop() {
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (serialPort?.readable && serialReader) {
+    const { value, done } = await serialReader.read();
+
+    if (done) {
+      break;
+    }
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? "";
+
+    lines.forEach((line) => {
+      const trimmedLine = line.trim();
+
+      if (!trimmedLine) {
+        return;
+      }
+
+      serialPreview.textContent = trimmedLine;
+      const payload = normalizeCsvPayload(trimmedLine);
+
+      if (!payload) {
+        updateSerialState("Connected, waiting for supported CSV packets");
+        return;
+      }
+
+      window.updateMicrobitDashboard(payload);
+      updateSerialState("Receiving CSV packets");
+    });
+  }
+}
+
+async function connectSerial() {
+  if (!("serial" in navigator)) {
+    serialMode.textContent = "Unavailable in this browser";
+    updateSerialState("Web Serial API not supported");
+    return;
+  }
+
+  try {
+    updateSerialState("Requesting device");
+    serialPort = await navigator.serial.requestPort();
+    await serialPort.open({ baudRate: 9600 });
+    serialReader = serialPort.readable.getReader();
+    updateSerialState("Connected");
+    stopPreviewLoop();
+    serialReadLoopPromise = readSerialLoop();
+    await serialReadLoopPromise;
+  } catch (error) {
+    if (error?.name !== "NotFoundError") {
+      console.error("Serial connection error:", error);
+      updateSerialState("Connection failed");
+    } else {
+      updateSerialState("No device selected");
+    }
+  } finally {
+    await disconnectSerial();
+  }
+}
+
 // Data Streamer integration point:
 // Replace the preview feed by calling `window.updateMicrobitDashboard(...)`
 // whenever MakeCode Data Streamer emits a new row of values.
@@ -205,7 +336,7 @@ function stopPreviewLoop() {
 // }
 window.updateMicrobitDashboard = function updateMicrobitDashboard(payload) {
   stopPreviewLoop();
-  renderDashboard(normalizeIncomingPayload(payload));
+  renderDashboard(payload.connected ? payload : normalizeIncomingPayload(payload));
 };
 
 renderDashboard(initialState);
@@ -227,4 +358,10 @@ sampleLiveButton.addEventListener("click", () => {
     buttonB: 1,
     temperature: 29,
   });
+});
+connectSerialButton.addEventListener("click", () => {
+  void connectSerial();
+});
+disconnectSerialButton.addEventListener("click", () => {
+  void disconnectSerial();
 });
