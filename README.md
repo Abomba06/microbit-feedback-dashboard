@@ -2,6 +2,14 @@
 
 A lightweight real-time dashboard for a BBC micro:bit using Microsoft MakeCode Data Streamer values.
 
+## Run locally
+
+```bash
+npm start
+```
+
+Then open `http://localhost:3000`.
+
 ## Included
 
 - A 5x5 LED matrix that visually mirrors the micro:bit display
@@ -17,7 +25,7 @@ A lightweight real-time dashboard for a BBC micro:bit using Microsoft MakeCode D
 
 ## Connect live data
 
-Open `index.html` in a browser, then feed live values into:
+Run the local server, open the dashboard in a browser, then feed live values into:
 
 ```js
 window.updateMicrobitDashboard({
