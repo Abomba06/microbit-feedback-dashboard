@@ -183,7 +183,7 @@ function renderDashboard(state) {
   const fillPercent = clamp(((safeTemperature + 5) / 45) * 100, 8, 100);
   const displayTemperature = celsiusToFahrenheit(safeTemperature);
 
-  temperatureValue.textContent = `${Math.round(displayTemperature)}`;
+  temperatureValue.textContent = `${displayTemperature.toFixed(1)}`;
   thermometerFill.style.height = `${fillPercent}%`;
 
   sourceName.textContent = currentState.source;
