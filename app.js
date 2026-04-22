@@ -142,7 +142,7 @@ function normalizeCsvPayload(line) {
     });
   }
 
-  if (values.length === 4 && values[0].length >= 25) {
+  if (values.length === 4 && /^[01]+$/.test(values[0])) {
     return normalizeIncomingPayload({
       ledMatrix: values[0].slice(0, 25).split(""),
       buttonA: values[1],
