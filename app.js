@@ -38,7 +38,7 @@ const mockFrames = [
     ],
     buttonA: false,
     buttonB: false,
-    temperature: 23,
+    temperature: 73.4,
   },
   {
     ledMatrix: [
@@ -50,7 +50,7 @@ const mockFrames = [
     ],
     buttonA: true,
     buttonB: false,
-    temperature: 25,
+    temperature: 77.0,
   },
   {
     ledMatrix: [
@@ -62,7 +62,7 @@ const mockFrames = [
     ],
     buttonA: false,
     buttonB: true,
-    temperature: 27,
+    temperature: 80.6,
   },
 ];
 
@@ -70,7 +70,7 @@ const initialState = {
   ledMatrix: Array(25).fill(0),
   buttonA: false,
   buttonB: false,
-  temperature: 24,
+  temperature: 75.2,
   source: "Mock Data",
   connected: false,
 };
@@ -84,10 +84,6 @@ let serialReadLoopPromise = null;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
-}
-
-function celsiusToFahrenheit(valueInCelsius) {
-  return (valueInCelsius * 9) / 5 + 32;
 }
 
 function normalizeLedMatrix(ledMatrix) {
@@ -180,10 +176,9 @@ function renderDashboard(state) {
   const safeTemperature = Number.isFinite(Number(currentState.temperature))
     ? Number(currentState.temperature)
     : 0;
-  const fillPercent = clamp(((safeTemperature + 5) / 45) * 100, 8, 100);
-  const displayTemperature = celsiusToFahrenheit(safeTemperature);
+  const fillPercent = clamp(((safeTemperature - 32) / 72) * 100, 8, 100);
 
-  temperatureValue.textContent = `${displayTemperature.toFixed(1)}`;
+  temperatureValue.textContent = `${safeTemperature.toFixed(1)}`;
   thermometerFill.style.height = `${fillPercent}%`;
 
   sourceName.textContent = currentState.source;
@@ -337,7 +332,7 @@ async function connectSerial() {
 //   ledMatrix: [0, 1, 0, ... 25 total values],
 //   buttonA: 1,
 //   buttonB: 0,
-//   temperature: 24
+//   temperature: 75.2
 // }
 window.updateMicrobitDashboard = function updateMicrobitDashboard(payload) {
   stopPreviewLoop();
@@ -361,7 +356,7 @@ sampleLiveButton.addEventListener("click", () => {
     ],
     buttonA: 1,
     buttonB: 1,
-    temperature: 29,
+    temperature: 84.2,
   });
 });
 connectSerialButton.addEventListener("click", () => {
