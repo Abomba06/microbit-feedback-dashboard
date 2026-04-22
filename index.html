@@ -49,9 +49,7 @@
         <section class="panel panel-temp" aria-labelledby="temperature-title">
           <div class="panel-heading">
             <p class="panel-kicker">Environment</p>
-            <h2 id="temperature-title">
-              Temperature Thing I forget the name :D
-            </h2>
+            <h2 id="temperature-title">Temperature Gauge</h2>
           </div>
           <div class="temperature-layout">
             <div class="thermometer" aria-hidden="true">
@@ -67,7 +65,7 @@
                 ><span class="unit">°F</span>
               </p>
               <p class="temperature-range">
-                Expected micro:bit room range: 85-90 F (i think)
+                Expected micro:bit room range: 32&deg;F to 104&deg;F
               </p>
             </div>
           </div>
@@ -116,7 +114,8 @@
             </div>
           </dl>
           <p class="stream-note">
-            This is all the stuff we're using to get the data here idk
+            This panel shows the latest source, update time, and connection state
+            for the incoming micro:bit feed.
           </p>
         </section>
 
@@ -144,13 +143,14 @@
           <div class="bridge-grid">
             <div class="bridge-card">
               <p class="payload-label">Expected CSV Format</p>
+              <p class="bridge-copy">`stateName,temperature`</p>
               <p class="bridge-copy">
-                `led1, led2, ... led25, buttonA, buttonB, temperature`
+                Set the micro:bit serial port to <strong>9600 baud</strong>.
+                The bridge reads one newline-terminated packet at a time.
               </p>
               <p class="bridge-copy">
-                pls pls pls make sure the micro:bit serial port is at
-                <strong>9600 baud</strong> and this'll read one
-                newline-terminated packet at a time. :DDD
+                Example states: `heart`, `happy`, `sad`, `check`, `cross`,
+                `square`, `diamond`, `thermometer`
               </p>
             </div>
             <div class="bridge-card">
@@ -162,7 +162,7 @@
                 </div>
                 <div>
                   <dt>Bridge State</dt>
-                  <dd id="serial-state">DO SMTH WHAT THE FREAK MAN (Idle)</dd>
+                  <dd id="serial-state">Idle</dd>
                 </div>
               </dl>
             </div>
@@ -174,9 +174,9 @@ No serial data received yet.</pre
             >
           </div>
           <p class="stream-note">
-            ts only works in Chromium-based browsers that support the Web Serial
-            API. so make sure we're in like chrome or edge (dont you dare be
-            running me on edge)
+            This works on `localhost` in Chromium-based browsers that support the
+            Web Serial API. When the micro:bit sends a supported state name and
+            temperature, the dashboard updates automatically.
           </p>
         </section>
 

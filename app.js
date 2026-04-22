@@ -20,6 +20,87 @@ const serialPreview = document.getElementById("serial-preview");
 const serialState = document.getElementById("serial-state");
 const serialMode = document.getElementById("serial-mode");
 
+const LED_STATE_PATTERNS = {
+  blank: Array(25).fill(0),
+  heart: [
+    0, 1, 0, 1, 0,
+    1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1,
+    0, 1, 1, 1, 0,
+    0, 0, 1, 0, 0,
+  ],
+  happy: [
+    0, 0, 0, 0, 0,
+    0, 1, 0, 1, 0,
+    0, 0, 0, 0, 0,
+    1, 0, 0, 0, 1,
+    0, 1, 1, 1, 0,
+  ],
+  smile: [
+    0, 0, 0, 0, 0,
+    0, 1, 0, 1, 0,
+    0, 0, 0, 0, 0,
+    1, 0, 0, 0, 1,
+    0, 1, 1, 1, 0,
+  ],
+  sad: [
+    0, 0, 0, 0, 0,
+    0, 1, 0, 1, 0,
+    0, 0, 0, 0, 0,
+    0, 1, 1, 1, 0,
+    1, 0, 0, 0, 1,
+  ],
+  check: [
+    0, 0, 0, 0, 1,
+    0, 0, 0, 1, 0,
+    1, 0, 1, 0, 0,
+    0, 1, 0, 0, 0,
+    0, 0, 0, 0, 0,
+  ],
+  yes: [
+    0, 0, 0, 0, 1,
+    0, 0, 0, 1, 0,
+    1, 0, 1, 0, 0,
+    0, 1, 0, 0, 0,
+    0, 0, 0, 0, 0,
+  ],
+  cross: [
+    1, 0, 0, 0, 1,
+    0, 1, 0, 1, 0,
+    0, 0, 1, 0, 0,
+    0, 1, 0, 1, 0,
+    1, 0, 0, 0, 1,
+  ],
+  no: [
+    1, 0, 0, 0, 1,
+    0, 1, 0, 1, 0,
+    0, 0, 1, 0, 0,
+    0, 1, 0, 1, 0,
+    1, 0, 0, 0, 1,
+  ],
+  square: [
+    1, 1, 1, 1, 1,
+    1, 0, 0, 0, 1,
+    1, 0, 0, 0, 1,
+    1, 0, 0, 0, 1,
+    1, 1, 1, 1, 1,
+  ],
+  diamond: [
+    0, 0, 1, 0, 0,
+    0, 1, 0, 1, 0,
+    1, 0, 0, 0, 1,
+    0, 1, 0, 1, 0,
+    0, 0, 1, 0, 0,
+  ],
+  thermometer: [
+    0, 0, 1, 0, 0,
+    0, 0, 1, 0, 0,
+    0, 0, 1, 0, 0,
+    0, 0, 1, 0, 0,
+    0, 1, 1, 1, 0,
+  ],
+};
+
 for (let index = 0; index < 25; index += 1) {
   const cell = document.createElement("div");
   cell.className = "led-cell";
@@ -29,37 +110,19 @@ for (let index = 0; index < 25; index += 1) {
 
 const mockFrames = [
   {
-    ledMatrix: [
-      0, 1, 0, 1, 0,
-      0, 1, 0, 1, 0,
-      0, 0, 1, 0, 0,
-      1, 0, 0, 0, 1,
-      0, 1, 1, 1, 0,
-    ],
+    displayState: "happy",
     buttonA: false,
     buttonB: false,
     temperature: 73.4,
   },
   {
-    ledMatrix: [
-      0, 1, 1, 1, 0,
-      1, 0, 0, 0, 1,
-      1, 0, 1, 0, 1,
-      1, 0, 0, 0, 1,
-      0, 1, 1, 1, 0,
-    ],
+    displayState: "square",
     buttonA: true,
     buttonB: false,
     temperature: 77.0,
   },
   {
-    ledMatrix: [
-      1, 1, 1, 1, 1,
-      1, 0, 0, 0, 1,
-      1, 0, 1, 0, 1,
-      1, 0, 0, 0, 1,
-      1, 1, 1, 1, 1,
-    ],
+    displayState: "heart",
     buttonA: false,
     buttonB: true,
     temperature: 80.6,
@@ -67,7 +130,8 @@ const mockFrames = [
 ];
 
 const initialState = {
-  ledMatrix: Array(25).fill(0),
+  ledMatrix: LED_STATE_PATTERNS.blank,
+  displayState: "blank",
   buttonA: false,
   buttonB: false,
   temperature: 75.2,
@@ -86,6 +150,13 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function normalizeStateName(value) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s:-]+/g, "");
+}
+
 function normalizeLedMatrix(ledMatrix) {
   if (!Array.isArray(ledMatrix)) {
     return currentState.ledMatrix;
@@ -100,6 +171,11 @@ function normalizeLedMatrix(ledMatrix) {
   return expanded;
 }
 
+function getLedMatrixForState(stateName) {
+  const normalizedState = normalizeStateName(stateName);
+  return LED_STATE_PATTERNS[normalizedState] ?? LED_STATE_PATTERNS.blank;
+}
+
 function extractLedMatrixFromObject(payload) {
   const ledKeys = Array.from({ length: 25 }, (_, index) => `led${index + 1}`);
 
@@ -107,14 +183,22 @@ function extractLedMatrixFromObject(payload) {
     return ledKeys.map((key) => payload[key]);
   }
 
+  if (payload.displayState || payload.state || payload.ledState || payload.icon) {
+    return getLedMatrixForState(
+      payload.displayState ?? payload.state ?? payload.ledState ?? payload.icon,
+    );
+  }
+
   return payload.ledMatrix;
 }
 
 function normalizeIncomingPayload(payload) {
   const ledMatrix = extractLedMatrixFromObject(payload);
+  const displayState = payload.displayState ?? payload.state ?? payload.ledState ?? payload.icon ?? "blank";
 
   return {
     ledMatrix,
+    displayState: normalizeStateName(displayState),
     buttonA: Boolean(Number(payload.buttonA ?? payload.a ?? 0)),
     buttonB: Boolean(Number(payload.buttonB ?? payload.b ?? 0)),
     temperature: Number(payload.temperature ?? payload.temp ?? 0),
@@ -132,6 +216,15 @@ function parseCsvLine(line) {
 
 function normalizeCsvPayload(line) {
   const values = parseCsvLine(line);
+
+  if (values.length === 2) {
+    return normalizeIncomingPayload({
+      displayState: values[0],
+      temperature: values[1],
+      buttonA: 0,
+      buttonB: 0,
+    });
+  }
 
   if (values.length >= 28) {
     return normalizeIncomingPayload({
@@ -194,6 +287,7 @@ function renderDashboard(state) {
   payloadPreview.textContent = JSON.stringify(
     {
       ledMatrix: currentState.ledMatrix,
+      displayState: currentState.displayState,
       buttonA: currentState.buttonA,
       buttonB: currentState.buttonB,
       temperature: currentState.temperature,
@@ -329,9 +423,7 @@ async function connectSerial() {
 // whenever MakeCode Data Streamer emits a new row of values.
 // Example payload:
 // {
-//   ledMatrix: [0, 1, 0, ... 25 total values],
-//   buttonA: 1,
-//   buttonB: 0,
+//   displayState: "heart",
 //   temperature: 75.2
 // }
 window.updateMicrobitDashboard = function updateMicrobitDashboard(payload) {
@@ -347,15 +439,7 @@ startPreviewButton.addEventListener("click", startPreviewLoop);
 stopPreviewButton.addEventListener("click", stopPreviewLoop);
 sampleLiveButton.addEventListener("click", () => {
   window.updateMicrobitDashboard({
-    ledMatrix: [
-      1, 0, 0, 0, 1,
-      0, 1, 0, 1, 0,
-      0, 0, 1, 0, 0,
-      0, 1, 0, 1, 0,
-      1, 0, 0, 0, 1,
-    ],
-    buttonA: 1,
-    buttonB: 1,
+    displayState: "cross",
     temperature: 84.2,
   });
 });

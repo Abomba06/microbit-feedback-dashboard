@@ -29,14 +29,12 @@ Run the local server, open the dashboard in a browser, then feed live values int
 
 ```js
 window.updateMicrobitDashboard({
-  ledMatrix: [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0],
-  buttonA: 1,
-  buttonB: 0,
-  temperature: 24
+  displayState: "heart",
+  temperature: 75.2
 });
 ```
 
-`app.js` also includes normalization helpers so you can adapt keyed Data Streamer values without changing the UI layout.
+`app.js` maps named display states to 5x5 LED patterns, so the micro:bit only needs to send the state name and the temperature.
 
 ## Direct micro:bit serial bridge
 
@@ -50,12 +48,13 @@ The dashboard can also connect straight to the micro:bit from `localhost` using 
 Recommended serial packet format from MakeCode Data Streamer:
 
 ```text
-led1,led2,led3,...,led25,buttonA,buttonB,temperature
+stateName,temperature
 ```
 
 Notes:
 
 - Baud rate: `9600`
 - Each packet should end with a newline
-- The bridge reads one CSV line at a time and maps the first 25 values to the LED matrix
-- It also accepts a compact fallback format of `25-character-led-string,buttonA,buttonB,temperature`
+- The bridge reads one CSV line at a time and maps the state name to a built-in 5x5 LED pattern
+- Supported built-in state names include `blank`, `heart`, `happy`, `smile`, `sad`, `check`, `yes`, `cross`, `no`, `square`, `diamond`, and `thermometer`
+- If you want more state names later, add them to `LED_STATE_PATTERNS` in `app.js`
