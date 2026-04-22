@@ -1,178 +1,227 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>micro:bit Feedback Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="dashboard-shell">
-    <header class="hero-card">
-      <div>
-        <p class="eyebrow">Live Device Monitor</p>
-        <h1>micro:bit Feedback Dashboard</h1>
-        <p class="hero-copy">
-          Track LED output, button presses, and device temperature from a BBC micro:bit
-          using a clean real-time control panel.
-        </p>
-      </div>
-      <div class="connection-pill" id="connection-pill">Preview Mode</div>
-    </header>
-
-    <main class="dashboard-grid">
-      <section class="panel panel-display" aria-labelledby="led-panel-title">
-        <div class="panel-heading">
-          <p class="panel-kicker">Display</p>
-          <h2 id="led-panel-title">5x5 LED Matrix</h2>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>micro:bit Feedback Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <header class="hero-card">
+        <div>
+          <p class="eyebrow">Live Device Monitor</p>
+          <h1>micro:bit Feedback Dashboard</h1>
+          <p class="hero-copy">
+            Track LED output, button presses, and device temperature from a BBC
+            micro:bit using a clean real-time control panel.
+          </p>
         </div>
-        <div class="microbit-frame">
-          <div class="microbit-header">
-            <span class="microbit-dot"></span>
-            <span class="microbit-label">micro:bit display</span>
-            <span class="microbit-dot"></span>
+        <div class="connection-pill" id="connection-pill">Preview Mode</div>
+      </header>
+
+      <main class="dashboard-grid">
+        <section class="panel panel-display" aria-labelledby="led-panel-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Display</p>
+            <h2 id="led-panel-title">5x5 LED Matrix</h2>
           </div>
-          <div class="led-grid" id="led-grid" aria-label="micro:bit LED display"></div>
-        </div>
-      </section>
-
-      <section class="panel panel-temp" aria-labelledby="temperature-title">
-        <div class="panel-heading">
-          <p class="panel-kicker">Environment</p>
-          <h2 id="temperature-title">Temperature Gauge</h2>
-        </div>
-        <div class="temperature-layout">
-          <div class="thermometer" aria-hidden="true">
-            <div class="thermometer-track">
-              <div class="thermometer-fill" id="thermometer-fill"></div>
+          <div class="microbit-frame">
+            <div class="microbit-header">
+              <span class="microbit-dot"></span>
+              <span class="microbit-label">micro:bit display</span>
+              <span class="microbit-dot"></span>
             </div>
-            <div class="thermometer-bulb"></div>
+            <div
+              class="led-grid"
+              id="led-grid"
+              aria-label="micro:bit LED display"
+            ></div>
           </div>
-          <div class="temperature-readout">
-            <p class="readout-label">Current Reading</p>
-            <p class="temperature-value"><span id="temperature-value">75</span><span class="unit">°F</span></p>
-            <p class="temperature-range">Expected micro:bit room range: 32°F to 104°F</p>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="panel panel-buttons" aria-labelledby="buttons-title">
-        <div class="panel-heading">
-          <p class="panel-kicker">Inputs</p>
-          <h2 id="buttons-title">Button Status</h2>
-        </div>
-        <div class="button-status-grid">
-          <article class="button-card" id="button-a-card">
-            <div>
-              <p class="button-label">Button A</p>
-              <p class="button-state" id="button-a-state">Not Pressed</p>
-            </div>
-            <div class="button-indicator" id="button-a-indicator">A</div>
-          </article>
-          <article class="button-card" id="button-b-card">
-            <div>
-              <p class="button-label">Button B</p>
-              <p class="button-state" id="button-b-state">Not Pressed</p>
-            </div>
-            <div class="button-indicator" id="button-b-indicator">B</div>
-          </article>
-        </div>
-      </section>
-
-      <section class="panel panel-stream" aria-labelledby="stream-title">
-        <div class="panel-heading">
-          <p class="panel-kicker">Data Feed</p>
-          <h2 id="stream-title">Stream Snapshot</h2>
-        </div>
-        <dl class="stream-metadata">
-          <div>
-            <dt>Source</dt>
-            <dd id="source-name">Mock Data</dd>
+        <section class="panel panel-temp" aria-labelledby="temperature-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Environment</p>
+            <h2 id="temperature-title">
+              Temperature Thing I forget the name :D
+            </h2>
           </div>
-          <div>
-            <dt>Last Update</dt>
-            <dd id="last-update">Waiting for stream</dd>
-          </div>
-          <div>
-            <dt>Status</dt>
-            <dd id="stream-status">Ready for Data Streamer input</dd>
-          </div>
-        </dl>
-        <p class="stream-note">
-          The JavaScript includes a small adapter so live values from Microsoft MakeCode
-          Data Streamer can replace the preview feed without restructuring the UI.
-        </p>
-      </section>
-
-      <section class="panel panel-serial" aria-labelledby="serial-title">
-        <div class="panel-heading">
-          <p class="panel-kicker">Serial Bridge</p>
-          <h2 id="serial-title">micro:bit Data Streamer Connection</h2>
-        </div>
-        <div class="serial-toolbar">
-          <button class="control-button control-button-accent" id="connect-serial-button" type="button">Connect micro:bit</button>
-          <button class="control-button" id="disconnect-serial-button" type="button">Disconnect</button>
-        </div>
-        <div class="bridge-grid">
-          <div class="bridge-card">
-            <p class="payload-label">Expected CSV Format</p>
-            <p class="bridge-copy">
-              `led1, led2, ... led25, buttonA, buttonB, temperature`
-            </p>
-            <p class="bridge-copy">
-              The browser opens the micro:bit serial port at <strong>9600 baud</strong> and
-              reads one newline-terminated packet at a time.
-            </p>
-          </div>
-          <div class="bridge-card">
-            <p class="payload-label">Connection Details</p>
-            <dl class="serial-status-list">
-              <div>
-                <dt>Mode</dt>
-                <dd id="serial-mode">Web Serial</dd>
+          <div class="temperature-layout">
+            <div class="thermometer" aria-hidden="true">
+              <div class="thermometer-track">
+                <div class="thermometer-fill" id="thermometer-fill"></div>
               </div>
-              <div>
-                <dt>Bridge State</dt>
-                <dd id="serial-state">Idle</dd>
-              </div>
-            </dl>
+              <div class="thermometer-bulb"></div>
+            </div>
+            <div class="temperature-readout">
+              <p class="readout-label">Current Reading</p>
+              <p class="temperature-value">
+                <span id="temperature-value">75</span
+                ><span class="unit">°F</span>
+              </p>
+              <p class="temperature-range">
+                Expected micro:bit room range: 85-90 F (i think)
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="payload-card">
-          <p class="payload-label">Latest Raw Serial Line</p>
-          <pre class="payload-preview" id="serial-preview">No serial data received yet.</pre>
-        </div>
-        <p class="stream-note">
-          This works on `localhost` in Chromium-based browsers that support the Web Serial API.
-          If your micro:bit stream uses the recommended column order above, the dashboard updates automatically.
-        </p>
-      </section>
+        </section>
 
-      <section class="panel panel-controls" aria-labelledby="controls-title">
-        <div class="panel-heading">
-          <p class="panel-kicker">Simulator</p>
-          <h2 id="controls-title">Local Testing Controls</h2>
-        </div>
-        <div class="control-actions">
-          <button class="control-button" id="start-preview-button" type="button">Start Preview Loop</button>
-          <button class="control-button" id="stop-preview-button" type="button">Pause Preview Loop</button>
-          <button class="control-button control-button-accent" id="sample-live-button" type="button">Send Sample Live Frame</button>
-        </div>
-        <p class="stream-note">
-          Use these while developing locally. Once Data Streamer is connected, the same dashboard
-          updates through the shared payload adapter.
-        </p>
-        <div class="payload-card">
-          <p class="payload-label">Last Payload</p>
-          <pre class="payload-preview" id="payload-preview">Waiting for data...</pre>
-        </div>
-      </section>
-    </main>
-  </div>
+        <section class="panel panel-buttons" aria-labelledby="buttons-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Inputs</p>
+            <h2 id="buttons-title">Button Status</h2>
+          </div>
+          <div class="button-status-grid">
+            <article class="button-card" id="button-a-card">
+              <div>
+                <p class="button-label">Button A</p>
+                <p class="button-state" id="button-a-state">Not Pressed</p>
+              </div>
+              <div class="button-indicator" id="button-a-indicator">A</div>
+            </article>
+            <article class="button-card" id="button-b-card">
+              <div>
+                <p class="button-label">Button B</p>
+                <p class="button-state" id="button-b-state">Not Pressed</p>
+              </div>
+              <div class="button-indicator" id="button-b-indicator">B</div>
+            </article>
+          </div>
+        </section>
 
-  <script src="app.js"></script>
-</body>
+        <section class="panel panel-stream" aria-labelledby="stream-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Data Feed</p>
+            <h2 id="stream-title">Stream Snapshot</h2>
+          </div>
+          <dl class="stream-metadata">
+            <div>
+              <dt>Source</dt>
+              <dd id="source-name">Mock Data</dd>
+            </div>
+            <div>
+              <dt>Last Update</dt>
+              <dd id="last-update">Waiting for stream</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd id="stream-status">Ready for Data Streamer input</dd>
+            </div>
+          </dl>
+          <p class="stream-note">
+            This is all the stuff we're using to get the data here idk
+          </p>
+        </section>
+
+        <section class="panel panel-serial" aria-labelledby="serial-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Serial Bridge</p>
+            <h2 id="serial-title">micro:bit Data Streamer Connection</h2>
+          </div>
+          <div class="serial-toolbar">
+            <button
+              class="control-button control-button-accent"
+              id="connect-serial-button"
+              type="button"
+            >
+              Connect micro:bit
+            </button>
+            <button
+              class="control-button"
+              id="disconnect-serial-button"
+              type="button"
+            >
+              Disconnect
+            </button>
+          </div>
+          <div class="bridge-grid">
+            <div class="bridge-card">
+              <p class="payload-label">Expected CSV Format</p>
+              <p class="bridge-copy">
+                `led1, led2, ... led25, buttonA, buttonB, temperature`
+              </p>
+              <p class="bridge-copy">
+                pls pls pls make sure the micro:bit serial port is at
+                <strong>9600 baud</strong> and this'll read one
+                newline-terminated packet at a time. :DDD
+              </p>
+            </div>
+            <div class="bridge-card">
+              <p class="payload-label">Connection Details</p>
+              <dl class="serial-status-list">
+                <div>
+                  <dt>Mode</dt>
+                  <dd id="serial-mode">Web Serial</dd>
+                </div>
+                <div>
+                  <dt>Bridge State</dt>
+                  <dd id="serial-state">DO SMTH WHAT THE FREAK MAN (Idle)</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+          <div class="payload-card">
+            <p class="payload-label">Latest Raw Serial Line</p>
+            <pre class="payload-preview" id="serial-preview">
+No serial data received yet.</pre
+            >
+          </div>
+          <p class="stream-note">
+            ts only works in Chromium-based browsers that support the Web Serial
+            API. so make sure we're in like chrome or edge (dont you dare be
+            running me on edge)
+          </p>
+        </section>
+
+        <section class="panel panel-controls" aria-labelledby="controls-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Simulator</p>
+            <h2 id="controls-title">Local Testing Controls</h2>
+          </div>
+          <div class="control-actions">
+            <button
+              class="control-button"
+              id="start-preview-button"
+              type="button"
+            >
+              Start Preview Loop
+            </button>
+            <button
+              class="control-button"
+              id="stop-preview-button"
+              type="button"
+            >
+              Pause Preview Loop
+            </button>
+            <button
+              class="control-button control-button-accent"
+              id="sample-live-button"
+              type="button"
+            >
+              Send Sample Live Frame
+            </button>
+          </div>
+          <p class="stream-note">
+            Use these while developing locally. Once Data Streamer is connected,
+            the same dashboard updates through the shared payload adapter.
+          </p>
+          <div class="payload-card">
+            <p class="payload-label">Last Payload</p>
+            <pre class="payload-preview" id="payload-preview">
+Waiting for data...</pre
+            >
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
 </html>

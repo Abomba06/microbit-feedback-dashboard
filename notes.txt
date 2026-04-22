@@ -1,0 +1,42 @@
+Build me a clean, modern web dashboard that connects to a BBC micro:bit through the Microsoft MakeCode Data Streamer extension and displays live data coming from the micro:bit.
+
+The dashboard should be designed as a real-time monitoring interface with a simple and visually clear layout. The page should have a centered main panel and should feel like a polished control dashboard rather than a plain school project.
+
+Core features and layout:
+
+1. At the top or center of the dashboard, include a visual representation of the micro:bit 5x5 LED display. This should look like the actual LED grid on the micro:bit and update live based on incoming streamed data, so the user can see what is currently being shown on the physical LEDs.
+2. Directly underneath the LED display, show the status of Button A and Button B. These should be displayed as two labeled buttons or indicators, such as:
+
+   * Button A: Pressed / Not Pressed
+   * Button B: Pressed / Not Pressed
+     The visual state should update live and be easy to understand at a glance.
+3. Next to the LED display section, include a thermometer or vertical temperature gauge that shows the current temperature reading from the micro:bit in real time. Also display the numeric temperature value clearly, for example: 24°C.
+4. Add clear labels for every section so it is obvious what each part represents.
+
+Technical requirements:
+
+* Assume the micro:bit data is coming from Microsoft MakeCode Data Streamer.
+* Structure the code so the dashboard can receive and process live incoming data values from the stream.
+* Make the code modular and easy to edit later.
+* Use HTML, CSS, and JavaScript unless a better lightweight frontend stack is clearly justified.
+* Make the UI responsive so it still looks good on a laptop screen.
+* Use a modern dashboard style with cards, spacing, rounded corners, and subtle shadows.
+* The LED grid should visually resemble the actual micro:bit matrix.
+* The button indicators should visibly change style when pressed.
+* The thermometer should animate or move based on temperature changes.
+
+Data assumptions:
+
+* The incoming stream will provide values for:
+
+  * LED state or enough information to reconstruct the 5x5 LED display
+  * Button A state
+  * Button B state
+  * Temperature
+* If needed, create placeholder/mock data so the dashboard can be previewed before live connection is added.
+
+Also:
+
+* Include comments in the code explaining where to connect the live Data Streamer values.
+* Keep the design neat, readable, and not overly cluttered.
+* Make the finished result look like a functional monitoring dashboard for a physical device.
