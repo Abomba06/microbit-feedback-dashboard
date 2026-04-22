@@ -86,6 +86,10 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function celsiusToFahrenheit(valueInCelsius) {
+  return (valueInCelsius * 9) / 5 + 32;
+}
+
 function normalizeLedMatrix(ledMatrix) {
   if (!Array.isArray(ledMatrix)) {
     return currentState.ledMatrix;
@@ -177,8 +181,9 @@ function renderDashboard(state) {
     ? Number(currentState.temperature)
     : 0;
   const fillPercent = clamp(((safeTemperature + 5) / 45) * 100, 8, 100);
+  const displayTemperature = celsiusToFahrenheit(safeTemperature);
 
-  temperatureValue.textContent = `${Math.round(safeTemperature)}`;
+  temperatureValue.textContent = `${Math.round(displayTemperature)}`;
   thermometerFill.style.height = `${fillPercent}%`;
 
   sourceName.textContent = currentState.source;

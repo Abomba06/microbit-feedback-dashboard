@@ -14,7 +14,7 @@ Then open `http://localhost:3000`.
 
 - A 5x5 LED matrix that visually mirrors the micro:bit display
 - Live Button A and Button B status cards
-- An animated vertical temperature gauge with numeric readout
+- An animated vertical temperature gauge with Fahrenheit readout
 - Mock preview data so the dashboard is easy to test before a device is connected
 
 ## Files
