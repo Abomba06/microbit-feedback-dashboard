@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>micro:bit Feedback Dashboard</title>
+    <title>Micro:bit Incubator System Demo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,15 +15,23 @@
   <body>
     <div class="dashboard-shell">
       <header class="hero-card">
-        <div>
-          <p class="eyebrow">Live Device Monitor</p>
-          <h1>micro:bit Feedback Dashboard</h1>
+        <div class="hero-copy-wrap">
+          <p class="demo-banner">Live Beat Bass Mode</p>
+          <p class="eyebrow">Interactive System Walkthrough</p>
+          <h1>Micro:bit Incubator System</h1>
           <p class="hero-copy">
-            Track LED output, button presses, and device temperature from a BBC
-            micro:bit using a clean real-time control panel.
+            Step through the incubator logic to see how the system keeps a sample
+            safe, warns when temperature drifts, and destroys the sample after
+            extended unsafe conditions.
           </p>
         </div>
-        <div class="connection-pill" id="connection-pill">Preview Mode</div>
+        <div class="hero-actions">
+          <div class="connection-pill" id="connection-pill">Stage 0 of 5</div>
+          <button class="control-button control-button-accent hero-button" id="next-step-button" type="button">
+            Next Step
+          </button>
+          <p class="hero-hint">Press the spacebar to advance the demo.</p>
+        </div>
       </header>
 
       <main class="dashboard-grid">
@@ -44,6 +52,9 @@
               aria-label="micro:bit LED display"
             ></div>
           </div>
+          <p class="microbit-caption" id="led-description">
+            The display starts neutral and then changes to match the current incubator state.
+          </p>
         </section>
 
         <section class="panel panel-temp" aria-labelledby="temperature-title">
@@ -61,162 +72,87 @@
             <div class="temperature-readout">
               <p class="readout-label">Current Reading</p>
               <p class="temperature-value">
-                <span id="temperature-value">75</span
-                ><span class="unit">°F</span>
+                <span id="temperature-value">72.4</span><span class="unit">&deg;F</span>
               </p>
-              <p class="temperature-range">
-                Expected micro:bit room range: 32&deg;F to 104&deg;F
-              </p>
+              <p class="temperature-range">Target temperature range: 85&deg;F to 90&deg;F</p>
             </div>
           </div>
         </section>
 
-        <section class="panel panel-buttons" aria-labelledby="buttons-title">
+        <section class="panel panel-status" aria-labelledby="status-title">
           <div class="panel-heading">
-            <p class="panel-kicker">Inputs</p>
-            <h2 id="buttons-title">Button Status</h2>
+            <p class="panel-kicker">System State</p>
+            <h2 id="status-title">Current Stage</h2>
+          </div>
+          <div class="status-stack">
+            <div class="status-pill" id="state-pill">INTRO</div>
+            <p class="status-title" id="status-text">Demo introduction ready</p>
+            <p class="status-feedback" id="feedback-text">
+              The incubator keeps a sample safe by staying within the approved range and responding clearly when conditions change.
+            </p>
+            <div class="timer-card">
+              <p class="payload-label">Time Out Of Range</p>
+              <p class="timer-value" id="timer-value">0.0 seconds</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel panel-signals" aria-labelledby="signals-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Feedback</p>
+            <h2 id="signals-title">System Signals</h2>
           </div>
           <div class="button-status-grid">
             <article class="button-card" id="button-a-card">
               <div>
-                <p class="button-label">Button A</p>
-                <p class="button-state" id="button-a-state">Not Pressed</p>
+                <p class="button-label">Alarm Tone</p>
+                <p class="button-state" id="button-a-state">Quiet</p>
               </div>
-              <div class="button-indicator" id="button-a-indicator">A</div>
+              <div class="button-indicator" id="button-a-indicator">S</div>
             </article>
             <article class="button-card" id="button-b-card">
               <div>
-                <p class="button-label">Button B</p>
-                <p class="button-state" id="button-b-state">Not Pressed</p>
+                <p class="button-label">Sample Status</p>
+                <p class="button-state" id="button-b-state">Protected</p>
               </div>
-              <div class="button-indicator" id="button-b-indicator">B</div>
+              <div class="button-indicator" id="button-b-indicator">P</div>
             </article>
           </div>
         </section>
 
-        <section class="panel panel-stream" aria-labelledby="stream-title">
+        <section class="panel panel-explainer" aria-labelledby="explainer-title">
           <div class="panel-heading">
-            <p class="panel-kicker">Data Feed</p>
-            <h2 id="stream-title">Stream Snapshot</h2>
+            <p class="panel-kicker">Narration</p>
+            <h2 id="explainer-title">What Is Happening</h2>
           </div>
-          <dl class="stream-metadata">
-            <div>
-              <dt>Source</dt>
-              <dd id="source-name">Mock Data</dd>
-            </div>
-            <div>
-              <dt>Last Update</dt>
-              <dd id="last-update">Waiting for stream</dd>
-            </div>
-            <div>
-              <dt>Status</dt>
-              <dd id="stream-status">Ready for Data Streamer input</dd>
-            </div>
-          </dl>
-          <p class="stream-note">
-            This panel shows the latest source, update time, and connection state
-            for the incoming micro:bit feed.
-          </p>
+          <div class="explanation-card">
+            <p class="explanation-title" id="explanation-title">Micro:bit Incubator System</p>
+            <p class="explanation-body" id="explanation-body">
+              This incubator maintains an internal temperature between 85&deg;F and 90&deg;F to keep the sample safe. The system monitors temperature continuously and provides feedback through LEDs, sound, and a dashboard.
+            </p>
+            <ul class="rule-list">
+              <li id="rule-range">Target Temperature Range: 85&deg;F &ndash; 90&deg;F</li>
+              <li id="rule-damage">If temperature is out of range for more than 20 seconds, the sample is destroyed.</li>
+            </ul>
+          </div>
         </section>
 
-        <section class="panel panel-serial" aria-labelledby="serial-title">
+        <section class="panel panel-progress" aria-labelledby="progress-title">
           <div class="panel-heading">
-            <p class="panel-kicker">Serial Bridge</p>
-            <h2 id="serial-title">micro:bit Data Streamer Connection</h2>
+            <p class="panel-kicker">Progress</p>
+            <h2 id="progress-title">Demo Sequence</h2>
           </div>
-          <div class="serial-toolbar">
-            <button
-              class="control-button control-button-accent"
-              id="connect-serial-button"
-              type="button"
-            >
-              Connect micro:bit
-            </button>
-            <button
-              class="control-button"
-              id="disconnect-serial-button"
-              type="button"
-            >
-              Disconnect
-            </button>
-          </div>
-          <div class="bridge-grid">
-            <div class="bridge-card">
-              <p class="payload-label">Expected CSV Format</p>
-              <p class="bridge-copy">`stateName,temperature`</p>
-              <p class="bridge-copy">
-                Set the micro:bit serial port to <strong>9600 baud</strong>.
-                The bridge reads one newline-terminated packet at a time.
-              </p>
-              <p class="bridge-copy">
-                Example states: `heart`, `happy`, `sad`, `check`, `cross`,
-                `square`, `diamond`, `thermometer`
-              </p>
-            </div>
-            <div class="bridge-card">
-              <p class="payload-label">Connection Details</p>
-              <dl class="serial-status-list">
-                <div>
-                  <dt>Mode</dt>
-                  <dd id="serial-mode">Web Serial</dd>
-                </div>
-                <div>
-                  <dt>Bridge State</dt>
-                  <dd id="serial-state">Idle</dd>
-                </div>
-              </dl>
-            </div>
-          </div>
+          <ol class="step-list" id="step-list" aria-label="Demo stages">
+            <li class="step-item">Intro</li>
+            <li class="step-item">Preheat</li>
+            <li class="step-item">In Range</li>
+            <li class="step-item">Out Of Range</li>
+            <li class="step-item">Recovery</li>
+            <li class="step-item">Failure</li>
+          </ol>
           <div class="payload-card">
-            <p class="payload-label">Latest Raw Serial Line</p>
-            <pre class="payload-preview" id="serial-preview">
-No serial data received yet.</pre
-            >
-          </div>
-          <p class="stream-note">
-            This works on `localhost` in Chromium-based browsers that support the
-            Web Serial API. When the micro:bit sends a supported state name and
-            temperature, the dashboard updates automatically.
-          </p>
-        </section>
-
-        <section class="panel panel-controls" aria-labelledby="controls-title">
-          <div class="panel-heading">
-            <p class="panel-kicker">Simulator</p>
-            <h2 id="controls-title">Local Testing Controls</h2>
-          </div>
-          <div class="control-actions">
-            <button
-              class="control-button"
-              id="start-preview-button"
-              type="button"
-            >
-              Start Preview Loop
-            </button>
-            <button
-              class="control-button"
-              id="stop-preview-button"
-              type="button"
-            >
-              Pause Preview Loop
-            </button>
-            <button
-              class="control-button control-button-accent"
-              id="sample-live-button"
-              type="button"
-            >
-              Send Sample Live Frame
-            </button>
-          </div>
-          <p class="stream-note">
-            Use these while developing locally. Once Data Streamer is connected,
-            the same dashboard updates through the shared payload adapter.
-          </p>
-          <div class="payload-card">
-            <p class="payload-label">Last Payload</p>
-            <pre class="payload-preview" id="payload-preview">
-Waiting for data...</pre
-            >
+            <p class="payload-label">Stage Snapshot</p>
+            <pre class="payload-preview" id="payload-preview">Waiting for demo data...</pre>
           </div>
         </section>
       </main>
