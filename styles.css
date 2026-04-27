@@ -221,6 +221,7 @@ h1 {
 .panel-temp,
 .panel-status,
 .panel-signals,
+.panel-connection,
 .panel-explainer,
 .panel-progress {
   min-height: 250px;
@@ -381,6 +382,34 @@ h1 {
 .button-card.is-pressed .button-indicator {
   background: linear-gradient(135deg, rgba(24, 169, 87, 0.92), rgba(14, 122, 62, 0.94));
   color: #fff;
+}
+
+.connection-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.connection-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.connection-card {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: rgba(19, 32, 51, 0.04);
+}
+
+.connection-status-text {
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.connection-note {
+  margin-top: 10px;
+  color: var(--text-muted);
+  line-height: 1.6;
 }
 
 .control-button {

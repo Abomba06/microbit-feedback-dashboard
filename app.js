@@ -17,6 +17,10 @@ const buttonBState = document.getElementById("button-b-state");
 const buttonACard = document.getElementById("button-a-card");
 const buttonBCard = document.getElementById("button-b-card");
 const stepList = document.getElementById("step-list");
+const connectMicrobitButton = document.getElementById("connect-microbit-button");
+const disconnectMicrobitButton = document.getElementById("disconnect-microbit-button");
+const microbitConnectionStatus = document.getElementById("microbit-connection-status");
+const microbitConnectionNote = document.getElementById("microbit-connection-note");
 
 const LED_STATE_PATTERNS = {
   blank: Array(25).fill(0),
@@ -48,13 +52,20 @@ const LED_STATE_PATTERNS = {
     0, 1, 0, 1, 0,
     1, 0, 0, 0, 1,
   ],
+  skull: [
+    0, 1, 1, 1, 0,
+    1, 0, 1, 0, 1,
+    1, 1, 1, 1, 1,
+    0, 1, 0, 1, 0,
+    0, 1, 1, 1, 0,
+  ],
 };
 
 const demoSteps = [
   {
     stageName: "INTRO",
     title: "Micro:bit Incubator System",
-    status: "Demo introduction ready",
+    status: "Live feed introduction ready",
     feedback:
       "The incubator keeps a sample safe by staying within the approved range and responding clearly when conditions change.",
     description:
@@ -66,6 +77,7 @@ const demoSteps = [
     timeOutOfRangeLimit: 0,
     alarmTone: "Quiet",
     sampleStatus: "Protected",
+    soundCue: "intro",
   },
   {
     stageName: "PREHEAT",
@@ -76,11 +88,13 @@ const demoSteps = [
       "The heater is active and the incubator is climbing toward the approved temperature window before the sample can be considered fully safe.",
     ledState: "thermometer",
     ledDescription: "The LED matrix shows a thermometer icon to indicate active warming.",
+    entryTemperature: 76.3,
     temperatureBand: [85.4, 86.8],
     timeOutOfRangeStart: 0,
     timeOutOfRangeLimit: 0,
     alarmTone: "Quiet",
     sampleStatus: "Protected",
+    soundCue: "warming",
   },
   {
     stageName: "IN_RANGE",
@@ -96,6 +110,7 @@ const demoSteps = [
     timeOutOfRangeLimit: 0,
     alarmTone: "Quiet",
     sampleStatus: "Protected",
+    soundCue: "stable",
   },
   {
     stageName: "OUT_OF_RANGE_HIGH",
@@ -111,6 +126,7 @@ const demoSteps = [
     timeOutOfRangeLimit: 12,
     alarmTone: "Warning Beep",
     sampleStatus: "At Risk",
+    soundCue: "warning",
   },
   {
     stageName: "RECOVERY",
@@ -126,21 +142,39 @@ const demoSteps = [
     timeOutOfRangeLimit: 0,
     alarmTone: "Quiet",
     sampleStatus: "Protected",
+    soundCue: "recovery",
+  },
+  {
+    stageName: "FAILURE_X",
+    title: "Critical failure warning",
+    status: "Sample Lost",
+    feedback: "The system has reached the final warning state before destruction is confirmed.",
+    description:
+      "The incubator has stayed unsafe past the allowed limit, so the system raises a final visual X warning before confirming destruction.",
+    ledState: "cross",
+    ledDescription: "The LED matrix shows an X to signal a critical failure condition.",
+    temperatureBand: [80.1, 83.8],
+    timeOutOfRangeStart: 20,
+    timeOutOfRangeLimit: 21,
+    alarmTone: "Critical Alarm",
+    sampleStatus: "Lost",
+    soundCue: "destroyed",
   },
   {
     stageName: "DESTROYED",
-    title: "Failure condition",
+    title: "Destruction confirmed",
     status: "Sample Destroyed",
     feedback: "Temperature remained unsafe for over 20 seconds.",
     description:
       "The incubator stayed outside the safe range too long. Once the unsafe timer passes 20 seconds, the sample is marked as destroyed and cannot recover.",
-    ledState: "cross",
-    ledDescription: "The LED matrix shows a cross because the sample has been destroyed.",
+    ledState: "skull",
+    ledDescription: "The LED matrix shows a skull because the sample has been out of range for more than 20 seconds.",
     temperatureBand: [80.4, 84.2],
     timeOutOfRangeStart: 21,
     timeOutOfRangeLimit: 24,
     alarmTone: "Critical Alarm",
     sampleStatus: "Destroyed",
+    soundCue: "destroyed",
   },
 ];
 
@@ -155,9 +189,98 @@ let demoStep = 0;
 let currentTemperature = 72.4;
 let currentOutOfRangeSeconds = 0;
 let stageIntervalId = null;
+let microbitPort = null;
+let audioContext = null;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function getAudioContext() {
+  if (audioContext) {
+    return audioContext;
+  }
+
+  const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextCtor) {
+    return null;
+  }
+
+  audioContext = new AudioContextCtor();
+  return audioContext;
+}
+
+function playTone(context, frequency, startAt, duration, type, gainValue) {
+  const oscillator = context.createOscillator();
+  const gainNode = context.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, startAt);
+  gainNode.gain.setValueAtTime(0.0001, startAt);
+  gainNode.gain.exponentialRampToValueAtTime(gainValue, startAt + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(context.destination);
+  oscillator.start(startAt);
+  oscillator.stop(startAt + duration + 0.02);
+}
+
+function playNoiseCue(cueName) {
+  const context = getAudioContext();
+  if (!context) {
+    return;
+  }
+
+  if (context.state === "suspended") {
+    void context.resume();
+  }
+
+  const now = context.currentTime + 0.02;
+
+  if (cueName === "intro") {
+    playTone(context, 392, now, 0.18, "sine", 0.06);
+    playTone(context, 523.25, now + 0.14, 0.2, "sine", 0.05);
+    return;
+  }
+
+  if (cueName === "warming") {
+    playTone(context, 330, now, 0.18, "triangle", 0.05);
+    playTone(context, 392, now + 0.12, 0.18, "triangle", 0.05);
+    playTone(context, 494, now + 0.24, 0.22, "triangle", 0.05);
+    return;
+  }
+
+  if (cueName === "stable") {
+    playTone(context, 523.25, now, 0.15, "sine", 0.05);
+    playTone(context, 659.25, now + 0.12, 0.2, "sine", 0.05);
+    return;
+  }
+
+  if (cueName === "warning") {
+    playTone(context, 220, now, 0.18, "square", 0.05);
+    playTone(context, 220, now + 0.24, 0.18, "square", 0.05);
+    playTone(context, 196, now + 0.48, 0.24, "square", 0.05);
+    return;
+  }
+
+  if (cueName === "recovery") {
+    playTone(context, 392, now, 0.14, "triangle", 0.05);
+    playTone(context, 523.25, now + 0.1, 0.14, "triangle", 0.05);
+    playTone(context, 659.25, now + 0.2, 0.22, "triangle", 0.05);
+    return;
+  }
+
+  if (cueName === "destroyed") {
+    playTone(context, 196, now, 0.28, "sawtooth", 0.05);
+    playTone(context, 164.81, now + 0.2, 0.28, "sawtooth", 0.05);
+    playTone(context, 130.81, now + 0.42, 0.38, "sawtooth", 0.05);
+  }
+}
+
+function setMicrobitConnectionState(status, note) {
+  microbitConnectionStatus.textContent = status;
+  microbitConnectionNote.textContent = note;
 }
 
 function normalizeLedMatrix(ledMatrix) {
@@ -235,7 +358,7 @@ function updateTemperatureTowardBand(stepConfig) {
   const desiredReading = randomBetween(bandMin, bandMax);
 
   if (stepConfig.stageName === "PREHEAT") {
-    currentTemperature = stepTowardTarget(currentTemperature, desiredReading, 1.8, 3.7);
+    currentTemperature = stepTowardTarget(currentTemperature, desiredReading, 0.9, 1.2);
   } else if (stepConfig.stageName === "OUT_OF_RANGE_HIGH") {
     currentTemperature = stepTowardTarget(currentTemperature, desiredReading, 1.2, 2.9);
   } else if (stepConfig.stageName === "DESTROYED") {
@@ -293,7 +416,7 @@ function applyStepFrame(stepConfig) {
 
   payloadPreview.textContent = JSON.stringify(getDemoSnapshot(stepConfig), null, 2);
   renderStepList();
-  nextStepButton.textContent = demoStep === demoSteps.length - 1 ? "Restart Demo" : "Next Step";
+  nextStepButton.textContent = demoStep === demoSteps.length - 1 ? "Restart Live Feed" : "Next Step";
 }
 
 function stopStageTicker() {
@@ -319,11 +442,15 @@ function renderDemoStep(step) {
   const stepConfig = demoSteps[demoStep];
 
   currentOutOfRangeSeconds = stepConfig.timeOutOfRangeStart ?? 0;
+  if (typeof stepConfig.entryTemperature === "number") {
+    currentTemperature = stepConfig.entryTemperature;
+  }
 
   if (demoStep === 0 && currentTemperature < 70) {
     currentTemperature = 72.4;
   }
 
+  playNoiseCue(stepConfig.soundCue);
   startStageTicker(stepConfig);
 }
 
@@ -350,6 +477,75 @@ window.addEventListener("keydown", (event) => {
 
   event.preventDefault();
   advanceDemoStep();
+});
+
+async function disconnectMicrobit() {
+  if (!microbitPort) {
+    setMicrobitConnectionState(
+      "Not connected",
+      "You can connect a real micro:bit here, but Live Beat Bass Mode will continue using scripted live feed data.",
+    );
+    return;
+  }
+
+  try {
+    await microbitPort.close();
+  } catch (_error) {
+    // Ignore close errors so the live feed can recover gracefully.
+  }
+
+  microbitPort = null;
+  setMicrobitConnectionState(
+    "Disconnected",
+    "The micro:bit link has been closed. The scripted walkthrough is still active.",
+  );
+}
+
+async function connectMicrobit() {
+  if (!("serial" in navigator)) {
+    setMicrobitConnectionState(
+      "Web Serial unavailable",
+      "Use a Chromium-based browser on localhost if you want to pair a micro:bit during the live feed.",
+    );
+    return;
+  }
+
+  try {
+    setMicrobitConnectionState(
+      "Requesting device...",
+      "Choose your micro:bit from the browser prompt. Live feed visuals will remain scripted after connection.",
+    );
+
+    microbitPort = await navigator.serial.requestPort();
+    await microbitPort.open({ baudRate: 9600 });
+
+    setMicrobitConnectionState(
+      "micro:bit connected",
+      "The micro:bit is paired successfully. Live Beat Bass Mode is still using hardcoded live feed stages instead of incoming device data.",
+    );
+  } catch (error) {
+    if (error?.name === "NotFoundError") {
+      setMicrobitConnectionState(
+        "Connection canceled",
+        "No micro:bit was selected. The live feed is still fully usable without a device connection.",
+      );
+      return;
+    }
+
+    microbitPort = null;
+    setMicrobitConnectionState(
+      "Connection failed",
+      "The browser could not open the micro:bit serial port. The scripted live feed will keep running normally.",
+    );
+  }
+}
+
+connectMicrobitButton.addEventListener("click", () => {
+  void connectMicrobit();
+});
+
+disconnectMicrobitButton.addEventListener("click", () => {
+  void disconnectMicrobit();
 });
 
 renderDemoStep(0);

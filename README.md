@@ -1,6 +1,6 @@
 # microbit-feedback-dashboard
 
-A presentation-ready demo dashboard for a BBC micro:bit incubator system.
+A presentation-ready live feed dashboard for a BBC micro:bit incubator system.
 
 ## Run locally
 
@@ -19,16 +19,16 @@ This version uses hardcoded stages instead of live device input.
 - The final step loops back to the introduction
 - Temperature updates once per second and gradually moves toward each stage target with decimal variation
 
-## Demo stages
+## Live feed stages
 
 1. Intro
 2. Preheat
 3. In Range
 4. Out Of Range
 5. Recovery
-6. Failure
+6. Destroyed
 
-## What the demo shows
+## What the live feed shows
 
 - The incubator target range of `85°F` to `90°F`
 - A warm-up phase before the sample is safe
@@ -36,10 +36,11 @@ This version uses hardcoded stages instead of live device input.
 - A warning state with visible time out of range
 - A successful recovery before the 20-second limit
 - A destroyed sample after staying unsafe too long
+- A unique sound cue at the beginning of each stage for clearer presentation feedback
 
 ## Main files
 
 - `index.html` contains the dashboard structure
 - `styles.css` contains the presentation styling
-- `app.js` controls the scripted demo flow and stage rendering
+- `app.js` controls the scripted live feed flow and stage rendering
 - `server.js` serves the project on localhost

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Micro:bit Incubator System Demo</title>
+    <title>Micro:bit Incubator System Live Feed</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,7 +30,7 @@
           <button class="control-button control-button-accent hero-button" id="next-step-button" type="button">
             Next Step
           </button>
-          <p class="hero-hint">Press the spacebar to advance the demo.</p>
+          <p class="hero-hint">Press the spacebar to advance the live feed.</p>
         </div>
       </header>
 
@@ -86,7 +86,7 @@
           </div>
           <div class="status-stack">
             <div class="status-pill" id="state-pill">INTRO</div>
-            <p class="status-title" id="status-text">Demo introduction ready</p>
+            <p class="status-title" id="status-text">Live feed introduction ready</p>
             <p class="status-feedback" id="feedback-text">
               The incubator keeps a sample safe by staying within the approved range and responding clearly when conditions change.
             </p>
@@ -120,6 +120,30 @@
           </div>
         </section>
 
+        <section class="panel panel-connection" aria-labelledby="connection-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Device Link</p>
+            <h2 id="connection-title">micro:bit Connection</h2>
+          </div>
+          <div class="connection-stack">
+            <div class="connection-toolbar">
+              <button class="control-button control-button-accent" id="connect-microbit-button" type="button">
+                Connect micro:bit
+              </button>
+              <button class="control-button" id="disconnect-microbit-button" type="button">
+                Disconnect
+              </button>
+            </div>
+            <div class="connection-card">
+              <p class="payload-label">Connection Status</p>
+              <p class="connection-status-text" id="microbit-connection-status">Not connected</p>
+              <p class="connection-note" id="microbit-connection-note">
+                You can connect a real micro:bit here, but Live Beat Bass Mode will continue using scripted live feed data.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section class="panel panel-explainer" aria-labelledby="explainer-title">
           <div class="panel-heading">
             <p class="panel-kicker">Narration</p>
@@ -140,19 +164,20 @@
         <section class="panel panel-progress" aria-labelledby="progress-title">
           <div class="panel-heading">
             <p class="panel-kicker">Progress</p>
-            <h2 id="progress-title">Demo Sequence</h2>
+            <h2 id="progress-title">Live Feed Sequence</h2>
           </div>
-          <ol class="step-list" id="step-list" aria-label="Demo stages">
+          <ol class="step-list" id="step-list" aria-label="Live feed stages">
             <li class="step-item">Intro</li>
             <li class="step-item">Preheat</li>
             <li class="step-item">In Range</li>
             <li class="step-item">Out Of Range</li>
             <li class="step-item">Recovery</li>
-            <li class="step-item">Failure</li>
+            <li class="step-item">X Warning</li>
+            <li class="step-item">Destroyed</li>
           </ol>
           <div class="payload-card">
             <p class="payload-label">Stage Snapshot</p>
-            <pre class="payload-preview" id="payload-preview">Waiting for demo data...</pre>
+            <pre class="payload-preview" id="payload-preview">Waiting for live feed data...</pre>
           </div>
         </section>
       </main>
